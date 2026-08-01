@@ -18,8 +18,8 @@ public class ExpenseService {
         return expenserepository.findAll();
     }
 
-    public Expense getExpenseByid(Long id){
-        return expenserepository.findById(id).orElse(null);
+    public Expense getExpenseById(Long id){
+        return expenserepository.findById(id).orElseThrow(() -> new RuntimeException("Expense not found"));
     }
     
     public void deleteExpense(Long id){
