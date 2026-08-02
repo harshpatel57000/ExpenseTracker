@@ -29,16 +29,16 @@ public class ExpenseService {
 
     public Expense updateExpense(Long id, Expense updatedExpense) {
 
-    Expense expense = expenserepository.findById(id)
+        Expense expense = expenserepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Expense not found"));
 
-    expense.setTitle(updatedExpense.getTitle());
-    expense.setAmount(updatedExpense.getAmount());
-    expense.setCategory(updatedExpense.getCategory());
-    expense.setDate(updatedExpense.getDate());
-    expense.setDescription(updatedExpense.getDescription());
+       expense.setTitle(updatedExpense.getTitle());
+       expense.setAmount(updatedExpense.getAmount());
+       expense.setCategory(updatedExpense.getCategory());
+       expense.setDate(updatedExpense.getDate());
+       expense.setDescription(updatedExpense.getDescription());
 
-    return expenserepository.save(expense);
+       return expenserepository.save(expense);
     }
 
 
@@ -57,7 +57,7 @@ public class ExpenseService {
             expense.setAmount((Double.valueOf(updates.get("amount").toString())));
 
         }
-        if(updates.containsKey("ca(tegory")){
+        if(updates.containsKey("category")){
             expense.setCategory ((String) updates.get("category"));
         }
         if(updates.containsKey("description")){
