@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-
+import java.util.Map;
 
 
 
@@ -43,6 +43,11 @@ public class ExpenseController {
     @DeleteMapping("/{id}")
     public void deleteExpense(@PathVariable Long id){
         expenseService.deleteExpense(id);
+    }
+
+    @PatchMapping("/{id}")
+    public Expense patchExpense(@PathVariable Long id,@RequestBody Map<String ,Object> updates){
+        return expenseService.patchExpense(id,updates);
     }
     
 }    

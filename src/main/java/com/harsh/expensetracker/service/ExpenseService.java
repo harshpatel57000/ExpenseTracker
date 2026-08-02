@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 @Service
 public class ExpenseService {
     @Autowired
@@ -44,6 +45,25 @@ public class ExpenseService {
     public void deleteExpense(Long id){
         Expense expense = expenserepository.findById(id).orElseThrow(() -> new RuntimeException("Expense not found"));
         expenserepository.delete(expense);
+    } 
+
+    public Expense patchExpense(Long id,Map<String,Object> updates){
+        Expense expense = expenserepository.findById(id).orElseThrow(() -> new RuntimeException("Expense not found"));
+        if(updates.containsKey("title")){
+            expense.setTitle((String) updates.get("title"));
+
+        }
+        if(updates.containsKey("amount")){
+            expense.setAmount((Double.valueOf(updates.get("amount").toString())));
+
+        }
+        if(updates.containsKey("ca(tegory")){
+            expense.setCategory ((String) updates.get("category"));
+        }
+        if(updates.containsKey("description")){
+            expense.setDescription((String) updates.get("description"));
+        }
+        return expenserepository.save(expense);
     }
 }
 
