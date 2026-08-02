@@ -22,8 +22,28 @@ public class ExpenseService {
         return expenserepository.findById(id).orElseThrow(() -> new RuntimeException("Expense not found"));
     }
     
-    public void deleteExpense(Long id){
+   /*public void deleteExpense(Long id){
         expenserepository.deleteById(id);
+    }*/
+
+    public Expense updateExpense(Long id, Expense updatedExpense) {
+
+    Expense expense = expenserepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Expense not found"));
+
+    expense.setTitle(updatedExpense.getTitle());
+    expense.setAmount(updatedExpense.getAmount());
+    expense.setCategory(updatedExpense.getCategory());
+    expense.setDate(updatedExpense.getDate());
+    expense.setDescription(updatedExpense.getDescription());
+
+    return expenserepository.save(expense);
+    }
+
+
+    public void deleteExpense(Long id){
+        Expense expense = expenserepository.findById(id).orElseThrow(() -> new RuntimeException("Expense not found"));
+        expenserepository.delete(expense);
     }
 }
 
