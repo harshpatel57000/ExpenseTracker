@@ -1,5 +1,5 @@
 package com.harsh.expensetracker.controller;
-/*import com.harsh.expensetracker.entity.Expense;*/
+
 import com.harsh.expensetracker.service.ExpenseService;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -31,8 +31,7 @@ public class ExpenseController {
     }
     @GetMapping("/{id}")
     public ExpenseDTO getExpenseById(@PathVariable Long id){
-       /*  Expense expense =expenserepository.findById(id).orElseThrow(() -> new RuntimeException("expense not found"));*/
-        return expenseService.getExpenseById(id);
+       return expenseService.getExpenseById(id);
     }
 
     @PostMapping

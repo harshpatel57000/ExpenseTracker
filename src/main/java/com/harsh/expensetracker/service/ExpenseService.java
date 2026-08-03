@@ -4,9 +4,10 @@ import com.harsh.expensetracker.repository.ExpenseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
 import com.harsh.expensetracker.dto.ExpenseDTO;
 import com.harsh.expensetracker.mapper.ExpenseMapper;
+
+import com.harsh.expensetracker.exception.ResourceNotFoundException;
 
 
 import java.util.List;
@@ -27,7 +28,7 @@ public class ExpenseService {
     }
 
     public ExpenseDTO getExpenseById(Long id){
-        Expense expense = expenserepository.findById(id).orElseThrow(() -> new RuntimeException("Expense not found"));
+        Expense expense = expenserepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Wrong Table -- INDEX"));
         return ExpenseMapper.toDTO(expense);
     }
     
@@ -37,7 +38,7 @@ public class ExpenseService {
 
     public ExpenseDTO updateExpense(Long id, ExpenseDTO dto) {
         
-        Expense expense = expenserepository.findById(id).orElseThrow(() -> new RuntimeException("Expense not found"));
+        Expense expense = expenserepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Expense not found"));
 
        expense.setTitle(dto.getTitle());
        expense.setAmount(dto.getAmount());
@@ -52,12 +53,12 @@ public class ExpenseService {
 
 
     public void deleteExpense(Long id){
-        Expense expense = expenserepository.findById(id).orElseThrow(() -> new RuntimeException("Expense not found"));
+        Expense expense = expenserepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Expense not found"));
         expenserepository.delete(expense);
     } 
 
     public ExpenseDTO patchExpense(Long id,Map<String,Object> updates){
-        Expense expense = expenserepository.findById(id).orElseThrow(() -> new RuntimeException("Expense not found"));
+        Expense expense = expenserepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Expense not found"));
         if(updates.containsKey("title")){
             expense.setTitle((String) updates.get("title"));
 
