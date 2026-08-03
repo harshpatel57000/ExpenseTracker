@@ -1,5 +1,5 @@
 package com.harsh.expensetracker.controller;
-import com.harsh.expensetracker.entity.Expense;
+/*import com.harsh.expensetracker.entity.Expense;*/
 import com.harsh.expensetracker.service.ExpenseService;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import java.util.Map;
+
+
+import com.harsh.expensetracker.dto.ExpenseDTO;
 
 
 
@@ -23,21 +26,22 @@ public class ExpenseController {
 
 
     @GetMapping
-    public List<Expense> getAllExpenses(){
+    public List<ExpenseDTO> getAllExpenses(){
         return expenseService.getAllExpenses();
     }
     @GetMapping("/{id}")
-    public Expense getExpenseById(@PathVariable Long id){
+    public ExpenseDTO getExpenseById(@PathVariable Long id){
+       /*  Expense expense =expenserepository.findById(id).orElseThrow(() -> new RuntimeException("expense not found"));*/
         return expenseService.getExpenseById(id);
     }
 
     @PostMapping
-    public Expense saveExpense(@RequestBody Expense expense){
-        return expenseService.saveExpense(expense);
+    public ExpenseDTO saveExpense(@RequestBody ExpenseDTO dto){
+        return expenseService.saveExpense(dto);
     }
     @PutMapping("/{id}")
-    public Expense updateExpense(@PathVariable Long id, @RequestBody Expense expense) {
-        return expenseService.updateExpense(id,expense);
+    public ExpenseDTO updateExpense(@PathVariable Long id, @RequestBody ExpenseDTO dto) {
+        return expenseService.updateExpense(id,dto);
     }
 
     @DeleteMapping("/{id}")
@@ -46,7 +50,7 @@ public class ExpenseController {
     }
 
     @PatchMapping("/{id}")
-    public Expense patchExpense(@PathVariable Long id,@RequestBody Map<String ,Object> updates){
+    public ExpenseDTO patchExpense(@PathVariable Long id,@RequestBody Map<String ,Object> updates){
         return expenseService.patchExpense(id,updates);
     }
     

@@ -4,6 +4,11 @@ import com.harsh.expensetracker.repository.ExpenseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
+import com.harsh.expensetracker.dto.ExpenseDTO;
+import com.harsh.expensetracker.mapper.ExpenseMapper;
+
+
 import java.util.List;
 import java.util.Map;
 @Service
@@ -11,34 +16,38 @@ public class ExpenseService {
     @Autowired
     private ExpenseRepository expenserepository;
 
-    public Expense saveExpense(Expense expense){
-        return expenserepository.save(expense);
+    public ExpenseDTO saveExpense(ExpenseDTO dto){
+        Expense expense = ExpenseMapper.toEntity(dto);
+        Expense savedExpense=expenserepository.save(expense);
+        return ExpenseMapper.toDTO(savedExpense);
     }
     
-    public List<Expense> getAllExpenses() {
-        return expenserepository.findAll();
+    public List<ExpenseDTO> getAllExpenses() {
+        return expenserepository.findAll().stream().map(ExpenseMapper::toDTO).toList();
     }
 
-    public Expense getExpenseById(Long id){
-        return expenserepository.findById(id).orElseThrow(() -> new RuntimeException("Expense not found"));
+    public ExpenseDTO getExpenseById(Long id){
+        Expense expense = expenserepository.findById(id).orElseThrow(() -> new RuntimeException("Expense not found"));
+        return ExpenseMapper.toDTO(expense);
     }
     
    /*public void deleteExpense(Long id){
         expenserepository.deleteById(id);
     }*/
 
-    public Expense updateExpense(Long id, Expense updatedExpense) {
+    public ExpenseDTO updateExpense(Long id, ExpenseDTO dto) {
+        
+        Expense expense = expenserepository.findById(id).orElseThrow(() -> new RuntimeException("Expense not found"));
 
-        Expense expense = expenserepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Expense not found"));
+       expense.setTitle(dto.getTitle());
+       expense.setAmount(dto.getAmount());
+       expense.setCategory(dto.getCategory());
+       expense.setDate(dto.getDate());
+       expense.setDescription(dto.getDescription());
 
-       expense.setTitle(updatedExpense.getTitle());
-       expense.setAmount(updatedExpense.getAmount());
-       expense.setCategory(updatedExpense.getCategory());
-       expense.setDate(updatedExpense.getDate());
-       expense.setDescription(updatedExpense.getDescription());
+       Expense updatedExpense = expenserepository.save(expense);
 
-       return expenserepository.save(expense);
+       return ExpenseMapper.toDTO(updatedExpense);
     }
 
 
@@ -47,7 +56,7 @@ public class ExpenseService {
         expenserepository.delete(expense);
     } 
 
-    public Expense patchExpense(Long id,Map<String,Object> updates){
+    public ExpenseDTO patchExpense(Long id,Map<String,Object> updates){
         Expense expense = expenserepository.findById(id).orElseThrow(() -> new RuntimeException("Expense not found"));
         if(updates.containsKey("title")){
             expense.setTitle((String) updates.get("title"));
@@ -63,7 +72,7 @@ public class ExpenseService {
         if(updates.containsKey("description")){
             expense.setDescription((String) updates.get("description"));
         }
-        return expenserepository.save(expense);
+        return ExpenseMapper.toDTO(expenserepository.save(expense));
     }
 }
 
