@@ -32,10 +32,6 @@ public class ExpenseService {
         return ExpenseMapper.toDTO(expense);
     }
     
-   /*public void deleteExpense(Long id){
-        expenserepository.deleteById(id);
-    }*/
-
     public ExpenseDTO updateExpense(Long id, ExpenseDTO dto) {
         
         Expense expense = expenserepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Expense not found"));

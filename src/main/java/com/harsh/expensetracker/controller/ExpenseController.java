@@ -15,6 +15,10 @@ import com.harsh.expensetracker.dto.ExpenseDTO;
 
 import jakarta.validation.Valid;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+
 
 
 @RestController
@@ -28,31 +32,40 @@ public class ExpenseController {
 
 
     @GetMapping
-    public List<ExpenseDTO> getAllExpenses(){
-        return expenseService.getAllExpenses();
+    public ResponseEntity<List<ExpenseDTO>> getAllExpenses(){
+        List<ExpenseDTO> expenses=expenseService.getAllExpenses();
+        return ResponseEntity.ok(expenses);
     }
+
     @GetMapping("/{id}")
-    public ExpenseDTO getExpenseById(@PathVariable Long id){
-       return expenseService.getExpenseById(id);
+    public ResponseEntity<ExpenseDTO> getExpenseById(@PathVariable Long id){
+        ExpenseDTO expenseDTO= expenseService.getExpenseById(id);
+       return ResponseEntity.ok(expenseDTO);
     }
 
     @PostMapping
-    public ExpenseDTO saveExpense(@Valid@RequestBody ExpenseDTO dto){
-        return expenseService.saveExpense(dto);
+    public ResponseEntity<ExpenseDTO> saveExpense(@Valid@RequestBody ExpenseDTO dto){
+        ExpenseDTO savedExpense=expenseService.saveExpense(dto);
+        return new ResponseEntity<>(savedExpense,HttpStatus.CREATED);
     }
     @PutMapping("/{id}")
-    public ExpenseDTO updateExpense(@PathVariable Long id,@Valid@RequestBody ExpenseDTO dto) {
-        return expenseService.updateExpense(id,dto);
+    public ResponseEntity<ExpenseDTO> updateExpense(@PathVariable Long id,@Valid@RequestBody ExpenseDTO dto) {
+        ExpenseDTO updatedExpense =expenseService.updateExpense(id,dto);
+        return ResponseEntity.ok(updatedExpense);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteExpense(@PathVariable Long id){
+    public ResponseEntity<Void> deleteExpense(@PathVariable Long id){
+
         expenseService.deleteExpense(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}")
-    public ExpenseDTO patchExpense(@PathVariable Long id,@RequestBody Map<String ,Object> updates){
-        return expenseService.patchExpense(id,updates);
+    public ResponseEntity<String> patchExpense(@PathVariable Long id,@RequestBody Map<String ,Object> updates){
+        expenseService.patchExpense(id,updates);
+        
+        return ResponseEntity.ok("data update successfuly");
     }
     
 }    
