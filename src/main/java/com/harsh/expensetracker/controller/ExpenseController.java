@@ -13,6 +13,8 @@ import java.util.Map;
 
 import com.harsh.expensetracker.dto.ExpenseDTO;
 
+import jakarta.validation.Valid;
+
 
 
 @RestController
@@ -35,11 +37,11 @@ public class ExpenseController {
     }
 
     @PostMapping
-    public ExpenseDTO saveExpense(@RequestBody ExpenseDTO dto){
+    public ExpenseDTO saveExpense(@Valid@RequestBody ExpenseDTO dto){
         return expenseService.saveExpense(dto);
     }
     @PutMapping("/{id}")
-    public ExpenseDTO updateExpense(@PathVariable Long id, @RequestBody ExpenseDTO dto) {
+    public ExpenseDTO updateExpense(@PathVariable Long id,@Valid@RequestBody ExpenseDTO dto) {
         return expenseService.updateExpense(id,dto);
     }
 

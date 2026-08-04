@@ -53,7 +53,7 @@ public class ExpenseService {
 
 
     public void deleteExpense(Long id){
-        Expense expense = expenserepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Expense not found"));
+        Expense expense = expenserepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Wrong Table--INDEX--INSERT"));
         expenserepository.delete(expense);
     } 
 
