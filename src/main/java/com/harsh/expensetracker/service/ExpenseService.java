@@ -9,6 +9,10 @@ import com.harsh.expensetracker.mapper.ExpenseMapper;
 
 import com.harsh.expensetracker.exception.ResourceNotFoundException;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+
 
 import java.util.List;
 import java.util.Map;
@@ -21,6 +25,9 @@ public class ExpenseService {
         Expense expense = ExpenseMapper.toEntity(dto);
         Expense savedExpense=expenserepository.save(expense);
         return ExpenseMapper.toDTO(savedExpense);
+    }
+    public Page<ExpenseDTO> someExpenses(Pageable pageable){
+        return expenserepository.findAll(pageable).map(ExpenseMapper::toDTO);
     }
     
     public List<ExpenseDTO> getAllExpenses() {

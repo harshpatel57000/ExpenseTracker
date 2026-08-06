@@ -16,6 +16,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 
 
@@ -29,6 +31,11 @@ public class ExpenseController {
     }
 
 
+    @GetMapping("/page")
+    public ResponseEntity<Page<ExpenseDTO>> someExpenses(Pageable pageable){
+        Page<ExpenseDTO> expense=expenseService.someExpenses(pageable);
+        return ResponseEntity.ok(expense);
+    }
     @GetMapping
     public ResponseEntity<Map<String,List<ExpenseDTO>>> getAllExpenses(){
         List<ExpenseDTO> expenses=expenseService.getAllExpenses();
