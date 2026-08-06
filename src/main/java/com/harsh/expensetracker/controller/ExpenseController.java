@@ -1,17 +1,15 @@
 package com.harsh.expensetracker.controller;
 
 import com.harsh.expensetracker.service.ExpenseService;
+
+
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import java.util.Map;
+import java.util.*;
 
 
 import com.harsh.expensetracker.dto.ExpenseDTO;
+import com.harsh.expensetracker.response.ApiResponse;
 
 import jakarta.validation.Valid;
 
@@ -32,26 +30,31 @@ public class ExpenseController {
 
 
     @GetMapping
-    public ResponseEntity<List<ExpenseDTO>> getAllExpenses(){
+    public ResponseEntity<Map<String,List<ExpenseDTO>>> getAllExpenses(){
         List<ExpenseDTO> expenses=expenseService.getAllExpenses();
-        return ResponseEntity.ok(expenses);
+        Map<String,List<ExpenseDTO>> response=new HashMap<>();
+        response.put("List of All Expense",expenses);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ExpenseDTO> getExpenseById(@PathVariable Long id){
+    public ResponseEntity<ApiResponse<ExpenseDTO>> getExpenseById(@PathVariable Long id){
         ExpenseDTO expenseDTO= expenseService.getExpenseById(id);
-       return ResponseEntity.ok(expenseDTO);
+        ApiResponse<ExpenseDTO> response=new ApiResponse<>(true,"Data is available",expenseDTO);
+       return ResponseEntity.ok(response);
     }
 
     @PostMapping
-    public ResponseEntity<ExpenseDTO> saveExpense(@Valid@RequestBody ExpenseDTO dto){
+    public ResponseEntity<ApiResponse<ExpenseDTO>> saveExpense(@Valid@RequestBody ExpenseDTO dto){
         ExpenseDTO savedExpense=expenseService.saveExpense(dto);
-        return new ResponseEntity<>(savedExpense,HttpStatus.CREATED);
+        ApiResponse<ExpenseDTO> response=new ApiResponse<>(true,"Expense Created Successfully",savedExpense);
+        return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
     @PutMapping("/{id}")
-    public ResponseEntity<ExpenseDTO> updateExpense(@PathVariable Long id,@Valid@RequestBody ExpenseDTO dto) {
+    public ResponseEntity<ApiResponse<ExpenseDTO>> updateExpense(@PathVariable Long id,@Valid@RequestBody ExpenseDTO dto) {
         ExpenseDTO updatedExpense =expenseService.updateExpense(id,dto);
-        return ResponseEntity.ok(updatedExpense);
+        ApiResponse<ExpenseDTO> response=new ApiResponse<>(true,"Data update successfully",updatedExpense);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
@@ -62,10 +65,10 @@ public class ExpenseController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<String> patchExpense(@PathVariable Long id,@RequestBody Map<String ,Object> updates){
-        expenseService.patchExpense(id,updates);
-        
-        return ResponseEntity.ok("data update successfuly");
+    public ResponseEntity<ApiResponse<ExpenseDTO>> patchExpense(@PathVariable Long id,@RequestBody Map<String ,Object> updates){
+        ExpenseDTO expenseDTO=expenseService.patchExpense(id,updates);
+        ApiResponse<ExpenseDTO> response=new ApiResponse<>(true,"Data is Change",expenseDTO);
+        return ResponseEntity.ok(response);
     }
     
 }    
