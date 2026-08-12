@@ -4,7 +4,7 @@ import com.harsh.expensetracker.service.ExpenseService;
 
 
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
+
 import java.util.*;
 
 
@@ -21,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 
 
 
+
 @RestController
 @RequestMapping("/api/expenses")
 public class ExpenseController {
@@ -31,14 +32,21 @@ public class ExpenseController {
     }
 
 
-    @GetMapping("/page")
+    @GetMapping("/search")
+    public ResponseEntity<List<ExpenseDTO>> getdata(@RequestParam String Category) {
+        List<ExpenseDTO> returndata=expenseService.searchedData(Category);
+
+        return ResponseEntity.ok(returndata);
+    }
+    
+   @GetMapping("/page")
     public ResponseEntity<Page<ExpenseDTO>> someExpenses(Pageable pageable){
         Page<ExpenseDTO> expense=expenseService.someExpenses(pageable);
         return ResponseEntity.ok(expense);
     }
     @GetMapping
-    public ResponseEntity<Map<String,List<ExpenseDTO>>> getAllExpenses(){
-        List<ExpenseDTO> expenses=expenseService.getAllExpenses();
+    public ResponseEntity<Map<String,List<ExpenseDTO>>> getAllExpenses(Pageable pageable){
+        List<ExpenseDTO> expenses=expenseService.getAllExpenses(pageable);
         Map<String,List<ExpenseDTO>> response=new HashMap<>();
         response.put("List of All Expense",expenses);
         return ResponseEntity.ok(response);
@@ -71,7 +79,7 @@ public class ExpenseController {
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/category")
     public ResponseEntity<ApiResponse<ExpenseDTO>> patchExpense(@PathVariable Long id,@RequestBody Map<String ,Object> updates){
         ExpenseDTO expenseDTO=expenseService.patchExpense(id,updates);
         ApiResponse<ExpenseDTO> response=new ApiResponse<>(true,"Data is Change",expenseDTO);

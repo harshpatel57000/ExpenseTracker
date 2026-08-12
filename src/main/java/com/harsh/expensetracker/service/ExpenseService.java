@@ -1,25 +1,30 @@
 package com.harsh.expensetracker.service;
-import com.harsh.expensetracker.entity.Expense;
-import com.harsh.expensetracker.repository.ExpenseRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.harsh.expensetracker.dto.ExpenseDTO;
-import com.harsh.expensetracker.mapper.ExpenseMapper;
 
 import com.harsh.expensetracker.exception.ResourceNotFoundException;
+import com.harsh.expensetracker.repository.ExpenseRepository;
+import com.harsh.expensetracker.mapper.ExpenseMapper;
+import com.harsh.expensetracker.entity.Expense;
+import com.harsh.expensetracker.dto.ExpenseDTO;
+
+import java.util.*;
 
 import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
+import org.springframework.beans.factory.annotation.Autowired;
 
 
 
-import java.util.List;
-import java.util.Map;
 @Service
 public class ExpenseService {
     @Autowired
     private ExpenseRepository expenserepository;
+
+    public List<ExpenseDTO> searchedData(String category) {
+
+          List<Expense> result= expenserepository.findByCategory(category);
+          return result.stream().map(ExpenseMapper::toDTO).toList();
+    }
 
     public ExpenseDTO saveExpense(ExpenseDTO dto){
         Expense expense = ExpenseMapper.toEntity(dto);
@@ -30,8 +35,8 @@ public class ExpenseService {
         return expenserepository.findAll(pageable).map(ExpenseMapper::toDTO);
     }
     
-    public List<ExpenseDTO> getAllExpenses() {
-        return expenserepository.findAll().stream().map(ExpenseMapper::toDTO).toList();
+    public List<ExpenseDTO> getAllExpenses(Pageable pageable) {
+        return expenserepository.findAll(pageable).stream().map(ExpenseMapper::toDTO).toList();
     }
 
     public ExpenseDTO getExpenseById(Long id){

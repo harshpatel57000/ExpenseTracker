@@ -11,7 +11,7 @@ public class ExpenseMapper {
         return ExpenseDTO.builder().id(expense.getId()).title(expense.getTitle()).amount(expense.getAmount()).category(expense.getCategory()).date(expense.getDate()).description(expense.getDescription()).build();
                 
     }
-
+    //dto-->entity
 public static Expense toEntity(ExpenseDTO dto){
     if(dto ==null){
         return null;
