@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'agro_expense_page.dart';
+import 'farm_expense_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -49,8 +50,12 @@ class HomePage extends StatelessWidget {
               title: 'Add Farm Expense',
               subtitle: 'Record of Farnm Expense',
               onTap: () {
-                // TODO:
-                // Navigate to FARM Expense page
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const FarmExpensePage(),
+                  ),
+                );
               },
             ),
 
@@ -67,7 +72,7 @@ class HomePage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                  builder: (context) => const AgroExpensePage(),
+                    builder: (context) => const AgroExpensePage(),
                   ),
                 );
               },

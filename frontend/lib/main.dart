@@ -13,7 +13,7 @@ class FarmExpenseApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
 
-      title: 'TELEVESION Expense Tracker',
+      title: 'Farmer Expense Tracker',
 
       theme: ThemeData(
         useMaterial3: true,
