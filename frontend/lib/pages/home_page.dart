@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'agro_expense_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -25,27 +26,35 @@ class HomePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-
             // Welcome section
             const Text(
               'Welcome',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
             ),
 
             const SizedBox(height: 6),
 
             const Text(
               'Manage your farming expenses',
-              style: TextStyle(
-                fontSize: 15,
-                color: Colors.grey,
-              ),
+              style: TextStyle(fontSize: 15, color: Colors.grey),
             ),
 
             const SizedBox(height: 25),
+
+            // -------------------------
+            // ADD FARM EXPENSE
+            // -------------------------
+            _buildMenuCard(
+              icon: Icons.agriculture_outlined,
+              title: 'Add Farm Expense',
+              subtitle: 'Record of Farnm Expense',
+              onTap: () {
+                // TODO:
+                // Navigate to FARM Expense page
+              },
+            ),
+
+            const SizedBox(height: 15),
 
             // -------------------------
             // ADD AGRO EXPENSE
@@ -55,23 +64,12 @@ class HomePage extends StatelessWidget {
               title: 'Add Agro Expense',
               subtitle: 'Record agro product purchases',
               onTap: () {
-                // TODO:
-                // Navigate to Agro Expense page
-              },
-            ),
-
-            const SizedBox(height: 15),
-
-            // -------------------------
-            // ADD FARM EXPENSE
-            // -------------------------
-            _buildMenuCard(
-              icon: Icons.agriculture_outlined,
-              title: 'Add Farm Expense',
-              subtitle: 'Add expenses for a farm and crop',
-              onTap: () {
-                // TODO:
-                // Navigate to Farm Expense page
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                  builder: (context) => const AgroExpensePage(),
+                  ),
+                );
               },
             ),
 
@@ -129,7 +127,6 @@ class HomePage extends StatelessWidget {
 
           child: Row(
             children: [
-
               // Icon
               Container(
                 height: 55,
@@ -140,11 +137,7 @@ class HomePage extends StatelessWidget {
                   borderRadius: BorderRadius.circular(14),
                 ),
 
-                child: Icon(
-                  icon,
-                  size: 30,
-                  color: Colors.green.shade700,
-                ),
+                child: Icon(icon, size: 30, color: Colors.green.shade700),
               ),
 
               const SizedBox(width: 16),
@@ -167,20 +160,14 @@ class HomePage extends StatelessWidget {
 
                     Text(
                       subtitle,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: Colors.grey,
-                      ),
+                      style: const TextStyle(fontSize: 13, color: Colors.grey),
                     ),
                   ],
                 ),
               ),
 
               // Arrow
-              const Icon(
-                Icons.arrow_forward_ios,
-                size: 18,
-              ),
+              const Icon(Icons.arrow_forward_ios, size: 18),
             ],
           ),
         ),
