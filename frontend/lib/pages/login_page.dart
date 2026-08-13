@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'create_account_page.dart';
+import 'home_page.dart';
+
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -47,13 +49,11 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    // TODO:
-    // Later this will call your Spring Boot login API.
-    //
-    // Example:
-    // POST /api/auth/login
-
-    showMessage('Login button clicked');
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+         builder: (context) => const HomePage(),),
+);
   }
 
   // Show OTP section
@@ -80,13 +80,11 @@ class _LoginPageState extends State<LoginPage> {
 
   // Create account
   void createAccount() {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => const CreateAccountPage(),
-    ),
-  );
-}
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const CreateAccountPage()),
+    );
+  }
 
   void showMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
