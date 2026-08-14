@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'agro_expense_page.dart';
 import 'farm_expense_page.dart';
+import 'add_region_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -88,8 +89,12 @@ class HomePage extends StatelessWidget {
               title: 'Add New Farm / Region',
               subtitle: 'Create a new region or farm',
               onTap: () {
-                // TODO:
-                // Navigate to Add Region/Farm page
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AddRegionPage(),
+                  ),
+                );
               },
             ),
 
