@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'agro_expense_page.dart';
 import 'farm_expense_page.dart';
 import 'add_region_page.dart';
+import 'total_expense_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -108,8 +109,12 @@ class HomePage extends StatelessWidget {
               title: 'See All Total Farm Expense',
               subtitle: 'View expenses by region and farm',
               onTap: () {
-                // TODO:
-                // Navigate to Total Expense Report
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const TotalExpensePage(),
+                  ),
+                );
               },
             ),
           ],

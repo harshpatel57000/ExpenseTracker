@@ -4,125 +4,92 @@ class AgroExpensePage extends StatefulWidget {
   const AgroExpensePage({super.key});
 
   @override
-  State<AgroExpensePage> createState() => _AgroExpensePageState();
+  State<AgroExpensePage> createState() =>
+      _AgroExpensePageState();
 }
 
-class _AgroExpensePageState extends State<AgroExpensePage> {
-  // --------------------------------------------------
-  // Controllers
-  // --------------------------------------------------
+class _AgroExpensePageState
+    extends State<AgroExpensePage> {
+  // ============================================================
+  // CONTROLLERS
+  // ============================================================
 
   final TextEditingController productNameController =
       TextEditingController();
 
-  final TextEditingController weightController =
+  final TextEditingController bagWeightController =
       TextEditingController();
 
   final TextEditingController quantityController =
       TextEditingController();
 
-  final TextEditingController priceController =
+  final TextEditingController pricePerBagController =
       TextEditingController();
 
-  // --------------------------------------------------
-  // Selected units
-  // --------------------------------------------------
+  final TextEditingController totalWeightController =
+      TextEditingController();
 
-  String selectedWeightUnit = 'kg';
-  String selectedQuantityUnit = 'Bag';
+  // ============================================================
+  // VALUES
+  // ============================================================
 
-  // --------------------------------------------------
-  // Purchase date
-  // --------------------------------------------------
+  String selectedUnit = 'બેગ';
 
   DateTime selectedDate = DateTime.now();
 
-  // --------------------------------------------------
-  // Calculated values
-  // --------------------------------------------------
-
-  double totalWeight = 0;
   double totalAmount = 0;
 
-  @override
-  void initState() {
-    super.initState();
+  // ============================================================
+  // CALCULATE
+  //
+  // Example:
+  //
+  // Urea
+  // 1 bag = 45 kg
+  // 3 bags
+  // ₹300 / bag
+  //
+  // Total = 3 × ₹300 = ₹900
+  // Weight = 3 × 45 = 135 kg
+  // ============================================================
 
-    // Recalculate whenever user changes values.
-    weightController.addListener(calculateTotals);
-    quantityController.addListener(calculateTotals);
-    priceController.addListener(calculateTotals);
-  }
-
-  @override
-  void dispose() {
-    productNameController.dispose();
-    weightController.dispose();
-    quantityController.dispose();
-    priceController.dispose();
-
-    super.dispose();
-  }
-
-  // ==================================================
-  // CALCULATE TOTALS
-  // ==================================================
-
-  void calculateTotals() {
-    final double weight =
-        double.tryParse(weightController.text) ?? 0;
-
+  void calculateTotal() {
     final double quantity =
-        double.tryParse(quantityController.text) ?? 0;
+        double.tryParse(
+              quantityController.text,
+            ) ??
+            0;
 
     final double price =
-        double.tryParse(priceController.text) ?? 0;
+        double.tryParse(
+              pricePerBagController.text,
+            ) ??
+            0;
 
     setState(() {
-      // Example:
-      //
-      // Weight per bag = 45 kg
-      // Number of bags = 3
-      //
-      // Total weight = 45 × 3
-      //               = 135 kg
-
-      totalWeight = weight * quantity;
-
-      // Example:
-      //
-      // Price per bag = ₹300
-      // Number of bags = 3
-      //
-      // Total amount = 300 × 3
-      //              = ₹900
-
-      totalAmount = price * quantity;
+      totalAmount = quantity * price;
     });
   }
 
-  // ==================================================
-  // SELECT DATE
-  // ==================================================
+  // ============================================================
+  // DATE
+  // ============================================================
 
   Future<void> selectDate() async {
-    final DateTime? pickedDate = await showDatePicker(
+    final DateTime? picked =
+        await showDatePicker(
       context: context,
       initialDate: selectedDate,
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
     );
 
-    if (pickedDate != null) {
+    if (picked != null) {
       setState(() {
-        selectedDate = pickedDate;
+        selectedDate = picked;
       });
     }
   }
-
-  // ==================================================
-  // FORMAT DATE
-  // ==================================================
 
   String get formattedDate {
     return '${selectedDate.day.toString().padLeft(2, '0')}/'
@@ -130,147 +97,205 @@ class _AgroExpensePageState extends State<AgroExpensePage> {
         '${selectedDate.year}';
   }
 
-  // ==================================================
+  // ============================================================
   // ADD AGRO EXPENSE
-  // ==================================================
+  // ============================================================
 
   void addAgroExpense() {
     final String productName =
         productNameController.text.trim();
 
-    final double weight =
-        double.tryParse(weightController.text) ?? 0;
+    final double bagWeight =
+        double.tryParse(
+              bagWeightController.text,
+            ) ??
+            0;
 
     final double quantity =
-        double.tryParse(quantityController.text) ?? 0;
+        double.tryParse(
+              quantityController.text,
+            ) ??
+            0;
 
     final double price =
-        double.tryParse(priceController.text) ?? 0;
+        double.tryParse(
+              pricePerBagController.text,
+            ) ??
+            0;
 
-    // --------------------------------------------------
-    // Validation
-    // --------------------------------------------------
+    // ----------------------------------------------------------
+    // VALIDATION
+    // ----------------------------------------------------------
 
     if (productName.isEmpty) {
-      showMessage('Please enter product name');
+      showMessage(
+        'કૃષિ ઉત્પાદનનું નામ દાખલ કરો',
+      );
       return;
     }
 
-    if (weight <= 0) {
-      showMessage('Please enter valid weight');
+    if (bagWeight <= 0) {
+      showMessage(
+        'એક બેગમાં કેટલું વજન છે તે દાખલ કરો',
+      );
       return;
     }
 
     if (quantity <= 0) {
-      showMessage('Please enter valid quantity');
+      showMessage(
+        'કેટલી બેગ ખરીદી તે દાખલ કરો',
+      );
       return;
     }
 
     if (price <= 0) {
-      showMessage('Please enter valid price');
+      showMessage(
+        'એક બેગનો ભાવ દાખલ કરો',
+      );
       return;
     }
 
-    // --------------------------------------------------
-    // Purchase information
-    // --------------------------------------------------
+    // ----------------------------------------------------------
+    // TOTAL WEIGHT
+    // ----------------------------------------------------------
 
-    /*
-      Example:
+    final double totalWeight =
+        bagWeight * quantity;
 
-      Product       = Urea
-      Weight/unit   = 45 kg
-      Quantity      = 3 bags
-      Price/unit    = ₹300
+    // ----------------------------------------------------------
+    // TOTAL AMOUNT
+    // ----------------------------------------------------------
 
-      Total quantity = 45 × 3
-                     = 135 kg
+    final double amount =
+        quantity * price;
 
-      Total amount   = 300 × 3
-                     = ₹900
-    */
+    // ----------------------------------------------------------
+    // DATA
+    //
+    // Later this will go to Spring Boot API.
+    // ----------------------------------------------------------
 
-    final Map<String, dynamic> agroExpense = {
+    final Map<String, dynamic>
+        agroExpense = {
       'productName': productName,
-      'weightPerUnit': weight,
-      'weightUnit': selectedWeightUnit,
+
+      'weightPerBag': bagWeight,
+
       'quantity': quantity,
-      'quantityUnit': selectedQuantityUnit,
-      'pricePerUnit': price,
+
       'totalWeight': totalWeight,
-      'totalAmount': totalAmount,
-      'purchaseDate': selectedDate.toIso8601String(),
+
+      'pricePerBag': price,
+
+      'totalAmount': amount,
+
+      'unit': selectedUnit,
+
+      'date':
+          selectedDate.toIso8601String(),
+
+      // Inventory quantity.
+      //
+      // Initially everything is available.
+      'remainingWeight': totalWeight,
+
+      'usedWeight': 0.0,
     };
 
-    // TODO:
-    // Later send this object to Spring Boot API.
-    //
-    // Example:
-    //
-    // POST /api/agro-expenses
-    //
-    // The backend will save the purchase
-    // and create/update agro-product inventory.
-
-    debugPrint('Agro Expense: $agroExpense');
-
-    showMessage(
-      'Agro expense added successfully',
+    debugPrint(
+      'Agro Expense: $agroExpense',
     );
 
-    // Return to previous page.
-    Navigator.pop(context);
+    showMessage(
+      'કૃષિ ઉત્પાદનનો ખર્ચ ઉમેરાયો',
+    );
+
+    // ----------------------------------------------------------
+    // CLEAR FORM
+    // ----------------------------------------------------------
+
+    productNameController.clear();
+    bagWeightController.clear();
+    quantityController.clear();
+    pricePerBagController.clear();
+
+    setState(() {
+      totalAmount = 0;
+    });
   }
 
-  // ==================================================
+  // ============================================================
   // MESSAGE
-  // ==================================================
+  // ============================================================
 
   void showMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
+    ScaffoldMessenger.of(context)
+        .showSnackBar(
       SnackBar(
         content: Text(message),
-        behavior: SnackBarBehavior.floating,
+        behavior:
+            SnackBarBehavior.floating,
       ),
     );
   }
 
-  // ==================================================
+  // ============================================================
+  // DISPOSE
+  // ============================================================
+
+  @override
+  void dispose() {
+    productNameController.dispose();
+    bagWeightController.dispose();
+    quantityController.dispose();
+    pricePerBagController.dispose();
+    totalWeightController.dispose();
+
+    super.dispose();
+  }
+
+  // ============================================================
   // BUILD
-  // ==================================================
+  // ============================================================
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Agro Expense'),
+        title: const Text(
+          'કૃષિ ઉત્પાદન ખર્ચ',
+        ),
         centerTitle: true,
       ),
 
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
+          padding:
+              const EdgeInsets.all(20),
 
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment:
+                CrossAxisAlignment.stretch,
+
             children: [
 
-              // ------------------------------------------------
+              // ==================================================
               // HEADER
-              // ------------------------------------------------
+              // ==================================================
 
               const Text(
-                'Agro Product Purchase',
+                'કૃષિ ઉત્પાદન ખરીદી',
                 style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 25,
+                  fontWeight:
+                      FontWeight.bold,
                 ),
               ),
 
               const SizedBox(height: 6),
 
               const Text(
-                'Record a product purchased for future farm use.',
+                'ખાતર, દવા અને અન્ય કૃષિ વસ્તુઓની ખરીદીનો ખર્ચ ઉમેરો.',
                 style: TextStyle(
                   color: Colors.grey,
                   fontSize: 14,
@@ -279,151 +304,122 @@ class _AgroExpensePageState extends State<AgroExpensePage> {
 
               const SizedBox(height: 25),
 
-              // ------------------------------------------------
+              // ==================================================
               // PRODUCT NAME
-              // ------------------------------------------------
+              // ==================================================
 
               _buildTextField(
-                controller: productNameController,
-                label: 'Product Name',
-                hint: 'Example: Urea',
-                icon: Icons.inventory_2_outlined,
+                controller:
+                    productNameController,
+
+                label:
+                    'કૃષિ ઉત્પાદનનું નામ',
+
+                hint:
+                    'ઉદાહરણ: યુરિયા',
+
+                icon:
+                    Icons.inventory_2_outlined,
               ),
 
-              const SizedBox(height: 18),
+              const SizedBox(height: 16),
 
-              // ------------------------------------------------
-              // WEIGHT PER UNIT
-              // ------------------------------------------------
-
-              const Text(
-                'Weight per Unit',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-
-              const SizedBox(height: 8),
-
-              Row(
-                children: [
-
-                  Expanded(
-                    child: _buildNumberField(
-                      controller: weightController,
-                      hint: 'Example: 45',
-                      icon: Icons.scale_outlined,
-                    ),
-                  ),
-
-                  const SizedBox(width: 10),
-
-                  SizedBox(
-                    width: 110,
-                    child: _buildDropdown(
-                      value: selectedWeightUnit,
-                      items: const [
-                        'kg',
-                        'gram',
-                        'litre',
-                      ],
-                      onChanged: (value) {
-                        if (value != null) {
-                          setState(() {
-                            selectedWeightUnit = value;
-                          });
-                        }
-                      },
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 18),
-
-              // ------------------------------------------------
-              // NUMBER OF UNITS
-              // ------------------------------------------------
-
-              const Text(
-                'Number of Units',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-
-              const SizedBox(height: 8),
-
-              Row(
-                children: [
-
-                  Expanded(
-                    child: _buildNumberField(
-                      controller: quantityController,
-                      hint: 'Example: 3',
-                      icon: Icons.numbers_outlined,
-                    ),
-                  ),
-
-                  const SizedBox(width: 10),
-
-                  SizedBox(
-                    width: 110,
-                    child: _buildDropdown(
-                      value: selectedQuantityUnit,
-                      items: const [
-                        'Bag',
-                        'Bottle',
-                        'Packet',
-                        'Box',
-                        'Unit',
-                      ],
-                      onChanged: (value) {
-                        if (value != null) {
-                          setState(() {
-                            selectedQuantityUnit = value;
-                          });
-                        }
-                      },
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 18),
-
-              // ------------------------------------------------
-              // PRICE PER UNIT
-              // ------------------------------------------------
+              // ==================================================
+              // WEIGHT PER BAG
+              // ==================================================
 
               _buildNumberField(
-                controller: priceController,
-                label: 'Price per Unit',
-                hint: 'Example: 300',
-                icon: Icons.currency_rupee,
+                controller:
+                    bagWeightController,
+
+                label:
+                    'એક બેગનું વજન (કિલો)',
+
+                hint:
+                    'ઉદાહરણ: 45',
+
+                icon:
+                    Icons.scale_outlined,
               ),
 
-              const SizedBox(height: 22),
+              const SizedBox(height: 16),
 
-              // ------------------------------------------------
-              // CALCULATION CARD
-              // ------------------------------------------------
+              // ==================================================
+              // QUANTITY
+              // ==================================================
 
-              _buildCalculationCard(),
+              _buildNumberField(
+                controller:
+                    quantityController,
+
+                label:
+                    'કેટલી બેગ ખરીદી?',
+
+                hint:
+                    'ઉદાહરણ: 3',
+
+                icon:
+                    Icons.shopping_bag_outlined,
+
+                decimal: false,
+
+                onChanged: (_) {
+                  calculateTotal();
+                },
+              ),
+
+              const SizedBox(height: 16),
+
+              // ==================================================
+              // PRICE PER BAG
+              // ==================================================
+
+              _buildNumberField(
+                controller:
+                    pricePerBagController,
+
+                label:
+                    'એક બેગનો ભાવ',
+
+                hint:
+                    'ઉદાહરણ: ₹300',
+
+                icon:
+                    Icons.currency_rupee,
+
+                onChanged: (_) {
+                  calculateTotal();
+                },
+              ),
 
               const SizedBox(height: 20),
 
-              // ------------------------------------------------
-              // PURCHASE DATE
-              // ------------------------------------------------
+              // ==================================================
+              // TOTAL WEIGHT CARD
+              // ==================================================
+
+              _buildWeightCard(),
+
+              const SizedBox(height: 15),
+
+              // ==================================================
+              // TOTAL AMOUNT CARD
+              // ==================================================
+
+              _buildAmountCard(),
+
+              const SizedBox(height: 20),
+
+              // ==================================================
+              // DATE
+              // ==================================================
 
               const Text(
-                'Purchase Date',
+                'ખરીદીની તારીખ',
                 style: TextStyle(
                   fontSize: 15,
-                  fontWeight: FontWeight.w600,
+                  fontWeight:
+                      FontWeight.w600,
                 ),
               ),
 
@@ -432,34 +428,49 @@ class _AgroExpensePageState extends State<AgroExpensePage> {
               InkWell(
                 onTap: selectDate,
 
-                borderRadius: BorderRadius.circular(12),
+                borderRadius:
+                    BorderRadius.circular(
+                  12,
+                ),
 
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
+                  padding:
+                      const EdgeInsets.symmetric(
                     horizontal: 15,
                     vertical: 16,
                   ),
 
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.grey,
+                  decoration:
+                      BoxDecoration(
+                    border:
+                        Border.all(
+                      color:
+                          Colors.grey,
                     ),
 
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius:
+                        BorderRadius.circular(
+                      12,
+                    ),
                   ),
 
                   child: Row(
                     children: [
 
                       const Icon(
-                        Icons.calendar_today_outlined,
+                        Icons
+                            .calendar_today_outlined,
                       ),
 
-                      const SizedBox(width: 12),
+                      const SizedBox(
+                        width: 12,
+                      ),
 
                       Text(
                         formattedDate,
-                        style: const TextStyle(
+
+                        style:
+                            const TextStyle(
                           fontSize: 16,
                         ),
                       ),
@@ -467,7 +478,8 @@ class _AgroExpensePageState extends State<AgroExpensePage> {
                       const Spacer(),
 
                       const Icon(
-                        Icons.arrow_drop_down,
+                        Icons
+                            .arrow_drop_down,
                       ),
                     ],
                   ),
@@ -476,76 +488,44 @@ class _AgroExpensePageState extends State<AgroExpensePage> {
 
               const SizedBox(height: 30),
 
-              // ------------------------------------------------
+              // ==================================================
               // ADD BUTTON
-              // ------------------------------------------------
+              // ==================================================
 
               SizedBox(
                 height: 54,
 
-                child: ElevatedButton.icon(
-                  onPressed: addAgroExpense,
+                child:
+                    ElevatedButton.icon(
+                  onPressed:
+                      addAgroExpense,
 
-                  icon: const Icon(
+                  icon:
+                      const Icon(
                     Icons.add,
                   ),
 
-                  label: const Text(
-                    'Add Agro Expense',
-                    style: TextStyle(
+                  label:
+                      const Text(
+                    'ખર્ચ ઉમેરો',
+                    style:
+                        TextStyle(
                       fontSize: 17,
-                      fontWeight: FontWeight.bold,
+                      fontWeight:
+                          FontWeight.bold,
                     ),
                   ),
 
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 15),
-
-              // ------------------------------------------------
-              // INFORMATION
-              // ------------------------------------------------
-
-              Container(
-                padding: const EdgeInsets.all(15),
-
-                decoration: BoxDecoration(
-                  color: Colors.green.shade50,
-
-                  borderRadius: BorderRadius.circular(12),
-                ),
-
-                child: const Row(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
-
-                  children: [
-
-                    Icon(
-                      Icons.info_outline,
-                      color: Colors.green,
-                    ),
-
-                    SizedBox(width: 10),
-
-                    Expanded(
-                      child: Text(
-                        'The purchased product can be used later '
-                        'on different farms or different crop cycles. '
-                        'When the product is used, its quantity and '
-                        'cost will be added to the selected farm expense.',
-                        style: TextStyle(
-                          fontSize: 13,
-                        ),
+                  style:
+                      ElevatedButton.styleFrom(
+                    shape:
+                        RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(
+                        12,
                       ),
                     ),
-                  ],
+                  ),
                 ),
               ),
             ],
@@ -555,116 +535,265 @@ class _AgroExpensePageState extends State<AgroExpensePage> {
     );
   }
 
-  // ==================================================
-  // CALCULATION CARD
-  // ==================================================
+  // ============================================================
+  // TOTAL WEIGHT CARD
+  // ============================================================
 
-  Widget _buildCalculationCard() {
-    return Card(
-      elevation: 2,
+  Widget _buildWeightCard() {
+    final double bagWeight =
+        double.tryParse(
+              bagWeightController.text,
+            ) ??
+            0;
 
-      child: Padding(
-        padding: const EdgeInsets.all(18),
+    final double quantity =
+        double.tryParse(
+              quantityController.text,
+            ) ??
+            0;
 
-        child: Column(
-          children: [
+    final double totalWeight =
+        bagWeight * quantity;
 
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Purchase Summary',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+    return Container(
+      padding:
+          const EdgeInsets.all(18),
+
+      decoration:
+          BoxDecoration(
+        borderRadius:
+            BorderRadius.circular(
+          14,
+        ),
+
+        color: Colors.blue
+            .withValues(
+          alpha: 0.08,
+        ),
+
+        border:
+            Border.all(
+          color: Colors.blue
+              .withValues(
+            alpha: 0.2,
+          ),
+        ),
+      ),
+
+      child: Row(
+        children: [
+
+          Container(
+            padding:
+                const EdgeInsets.all(
+              10,
+            ),
+
+            decoration:
+                BoxDecoration(
+              borderRadius:
+                  BorderRadius.circular(
+                10,
+              ),
+
+              color: Colors.blue
+                  .withValues(
+                alpha: 0.12,
               ),
             ),
 
-            const SizedBox(height: 15),
+            child:
+                const Icon(
+              Icons.scale_outlined,
+            ),
+          ),
 
-            // Total quantity
-            Row(
-              mainAxisAlignment:
-                  MainAxisAlignment.spaceBetween,
+          const SizedBox(
+            width: 12,
+          ),
+
+          Expanded(
+            child: Column(
+              crossAxisAlignment:
+                  CrossAxisAlignment.start,
 
               children: [
 
                 const Text(
-                  'Total Quantity',
-                  style: TextStyle(
-                    color: Colors.grey,
+                  'કુલ વજન',
+                  style:
+                      TextStyle(
+                    color:
+                        Colors.grey,
                   ),
                 ),
 
+                const SizedBox(
+                  height: 3,
+                ),
+
                 Text(
-                  '${_formatNumber(totalWeight)} $selectedWeightUnit',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                  '${totalWeight.toStringAsFixed(2)} કિલો',
+
+                  style:
+                      const TextStyle(
+                    fontSize: 22,
+                    fontWeight:
+                        FontWeight.bold,
                   ),
                 ),
               ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
 
-            const Divider(height: 25),
+  // ============================================================
+  // TOTAL AMOUNT CARD
+  // ============================================================
 
-            // Total amount
-            Row(
-              mainAxisAlignment:
-                  MainAxisAlignment.spaceBetween,
+  Widget _buildAmountCard() {
+    return Container(
+      padding:
+          const EdgeInsets.all(18),
+
+      decoration:
+          BoxDecoration(
+        borderRadius:
+            BorderRadius.circular(
+          14,
+        ),
+
+        color: Colors.green
+            .withValues(
+          alpha: 0.08,
+        ),
+
+        border:
+            Border.all(
+          color: Colors.green
+              .withValues(
+            alpha: 0.2,
+          ),
+        ),
+      ),
+
+      child: Row(
+        children: [
+
+          Container(
+            padding:
+                const EdgeInsets.all(
+              10,
+            ),
+
+            decoration:
+                BoxDecoration(
+              borderRadius:
+                  BorderRadius.circular(
+                10,
+              ),
+
+              color: Colors.green
+                  .withValues(
+                alpha: 0.12,
+              ),
+            ),
+
+            child:
+                const Icon(
+              Icons.currency_rupee,
+            ),
+          ),
+
+          const SizedBox(
+            width: 12,
+          ),
+
+          Expanded(
+            child: Column(
+              crossAxisAlignment:
+                  CrossAxisAlignment.start,
 
               children: [
 
                 const Text(
-                  'Total Amount',
-                  style: TextStyle(
-                    color: Colors.grey,
+                  'કુલ ખરીદી ખર્ચ',
+                  style:
+                      TextStyle(
+                    color:
+                        Colors.grey,
                   ),
+                ),
+
+                const SizedBox(
+                  height: 3,
                 ),
 
                 Text(
                   '₹${totalAmount.toStringAsFixed(2)}',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
-                    color: Colors.green.shade700,
+
+                  style:
+                      const TextStyle(
+                    fontSize: 22,
+                    fontWeight:
+                        FontWeight.bold,
                   ),
                 ),
-                
               ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
-  // ==================================================
+  // ============================================================
   // TEXT FIELD
-  // ==================================================
+  // ============================================================
 
   Widget _buildTextField({
-    required TextEditingController controller,
+    required TextEditingController
+        controller,
+
     required String label,
+
     required String hint,
+
     required IconData icon,
   }) {
     return TextField(
       controller: controller,
 
-      decoration: InputDecoration(
+      decoration:
+          InputDecoration(
         labelText: label,
         hintText: hint,
-        prefixIcon: Icon(icon),
 
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+        prefixIcon:
+            Icon(icon),
+
+        border:
+            OutlineInputBorder(
+          borderRadius:
+              BorderRadius.circular(
+            12,
+          ),
         ),
 
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-            color: Colors.green.shade700,
+        focusedBorder:
+            OutlineInputBorder(
+          borderRadius:
+              BorderRadius.circular(
+            12,
+          ),
+
+          borderSide:
+              BorderSide(
+            color:
+                Colors.green.shade700,
             width: 2,
           ),
         ),
@@ -672,81 +801,67 @@ class _AgroExpensePageState extends State<AgroExpensePage> {
     );
   }
 
-  // ==================================================
+  // ============================================================
   // NUMBER FIELD
-  // ==================================================
+  // ============================================================
 
   Widget _buildNumberField({
-    required TextEditingController controller,
-    String? label,
+    required TextEditingController
+        controller,
+
+    required String label,
+
     required String hint,
+
     required IconData icon,
+
+    bool decimal = true,
+
+    Function(String)? onChanged,
   }) {
     return TextField(
       controller: controller,
 
-      keyboardType: const TextInputType.numberWithOptions(
-        decimal: true,
-      ),
-
-      decoration: InputDecoration(
-        labelText: label,
-        hintText: hint,
-        prefixIcon: Icon(icon),
-
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-            color: Colors.green.shade700,
-            width: 2,
-          ),
-        ),
-      ),
-    );
-  }
-
-  // ==================================================
-  // DROPDOWN
-  // ==================================================
-
-  Widget _buildDropdown({
-    required String value,
-    required List<String> items,
-    required ValueChanged<String?> onChanged,
-  }) {
-    return DropdownButtonFormField<String>(
-      initialValue: value,
-
-      items: items.map((String item) {
-        return DropdownMenuItem<String>(
-          value: item,
-          child: Text(item),
-        );
-      }).toList(),
+      keyboardType: decimal
+          ? const TextInputType
+              .numberWithOptions(
+              decimal: true,
+            )
+          : TextInputType.number,
 
       onChanged: onChanged,
 
-      decoration: InputDecoration(
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+      decoration:
+          InputDecoration(
+        labelText: label,
+        hintText: hint,
+
+        prefixIcon:
+            Icon(icon),
+
+        border:
+            OutlineInputBorder(
+          borderRadius:
+              BorderRadius.circular(
+            12,
+          ),
+        ),
+
+        focusedBorder:
+            OutlineInputBorder(
+          borderRadius:
+              BorderRadius.circular(
+            12,
+          ),
+
+          borderSide:
+              BorderSide(
+            color:
+                Colors.green.shade700,
+            width: 2,
+          ),
         ),
       ),
     );
-  }
-
-  // ==================================================
-  // FORMAT NUMBER
-  // ==================================================
-
-  String _formatNumber(double value) {
-    if (value == value.roundToDouble()) {
-      return value.toInt().toString();
-    }
-
-    return value.toStringAsFixed(2);
   }
 }
